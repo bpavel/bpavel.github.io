@@ -79,14 +79,18 @@ function getAllAttachments(){
 	db.query(map).then(function (result) {
 	  // handle result
 	  console.log(result);
+	  result.rows.forEach(getAttachmentInfo);
 	}).catch(function (err) {
 	  console.log(err);
 	});
 }
 
+function getAttachmentInfo(item, index){
+	console.log(item);
+}
 
 function map(doc) {
-  emit([doc.id,doc.attachments]);
+  emit([doc]);
 }
 
 getAllAttachments();
