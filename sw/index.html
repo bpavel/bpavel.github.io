@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Offline Reading</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="//cdn.jsdelivr.net/pouchdb/latest/pouchdb.min.js"></script>
 
 </head>
@@ -11,9 +12,10 @@
     <button onclick="document.location.reload(true);" class="btn">Retry Connection</button>
   </main>
   <section>
-	
-		<p>Capture Image: <input type="file" accept="image/*" id="inputFile" capture="camera"> </p>
-		<button onclick="storeFormInfo()" class="btn">Save</button>
+	<form method="post" enctype="multipart/form-data">
+		<p>Capture Image: <input type="file" accept="image/*" id="inputFile" name="myInputFile"> </p>		
+	</form>	
+	<button onclick="storeFormInfo()" class="btn">Save</button>
 	<div>Total db size is: <span id="total_size"></span>MB</div>
 	<div id="img_meta_data">Please upload a File</div>
   </section>
@@ -57,28 +59,29 @@ function storeFormInfo(){
 	  var url = URL.createObjectURL(blob);
 	  var img = document.createElement('img');
 	  img.src = url;
+	  img.width = 150;
 	  document.body.appendChild(img);
 
 	  var fileSize = JSON.stringify(Math.floor(blob.size/1024));
 	  var contentType = JSON.stringify(blob.type);
 
 	  imageMetaData.innerText = 'Filesize: ' + fileSize + 'KB, Content-Type: ' + contentType;
+	  calculateTotalSize(fileSize);
 	}).catch(function (err) {
 	  console.log(err);
 	});
 	//
 	// IMPORTANT CODE ENDS HERE
 	//
-	
+	return false;
 }
-function calculateTotalSize(){
-	totalSize = 0;
-	totalSizePlaceholder.innerText(totalSize);
+function calculateTotalSize(size){
+	totalSize += parseInt(size);
+	totalSizePlaceholder.innerText = totalSize/1000;
 }
 function getAllAttachments(){
 	db.query(map).then(function (result) {
 	  // handle result
-	  console.log(result);
 	  result.rows.forEach(getAttachmentInfo);
 	}).catch(function (err) {
 	  console.log(err);
@@ -86,7 +89,13 @@ function getAllAttachments(){
 }
 
 function getAttachmentInfo(item, index){
-	console.log(item);
+	//console.log(item);
+	db.getAttachment(item.id, 'file').then(function (blob) {
+	  var fileSize = JSON.stringify(Math.floor(blob.size/1024));
+	  calculateTotalSize(fileSize);
+	}).catch(function (err) {
+	  console.log(err);
+	});
 }
 
 function map(doc) {
