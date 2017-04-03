@@ -86,7 +86,7 @@ function getAllAttachments(){
 
 
 function map(doc) {
-  emit([doc.id]);
+  emit([doc.id,doc.attachments]);
 }
 
 getAllAttachments();
