@@ -21,11 +21,11 @@
 <script>
 
 
-if ('serviceWorker' in navigator) {
+/*if ('serviceWorker' in navigator) {
   navigator.serviceWorker
            .register('/sw/sw.js')
            .then(function () { console.log('Service Worker Registered'); });
-}
+}*/
 var inputFile = document.querySelector('#inputFile');
 var imageMetaData = document.querySelector('#img_meta_data');
 var totalSizePlaceholder = document.querySelector('#total_size');
@@ -38,12 +38,13 @@ function storeFormInfo(){
 	getFile = inputFile.files[0];
 	var d = new Date();
 	var n = d.getTime();
+	var p_id = 'image'+n;
 		
 	//
 	// IMPORTANT CODE STARTS HERE
 	//
 	db.put({
-	  _id: 'image'+n, 
+	  _id: p_id, 
 	  _attachments: {
 		"file": {
 		  type: getFile.type,
@@ -51,7 +52,7 @@ function storeFormInfo(){
 		}
 	  }
 	}).then(function () {
-	  return db.getAttachment('image', 'file');
+	  return db.getAttachment(p_id, 'file');
 	}).then(function (blob) {
 	  var url = URL.createObjectURL(blob);
 	  var img = document.createElement('img');
@@ -74,6 +75,22 @@ function calculateTotalSize(){
 	totalSize = 0;
 	totalSizePlaceholder.innerText(totalSize);
 }
+function getAllAttachments(){
+	db.query(map).then(function (result) {
+	  // handle result
+	  console.log(result);
+	}).catch(function (err) {
+	  console.log(err);
+	});
+}
+
+
+function map(doc) {
+  emit([doc]);
+}
+
+
+
 </script>  
 </body>
 </html>
