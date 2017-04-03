@@ -14,7 +14,7 @@
 	
 		<p>Capture Image: <input type="file" accept="image/*" id="inputFile" capture="camera"> </p>
 		<button onclick="storeFormInfo()" class="btn">Save</button>
-	
+	<div>Total db size is: <span id="total_size"></span>MB</div>
 	<div id="img_meta_data">Please upload a File</div>
   </section>
   
@@ -28,18 +28,22 @@ if ('serviceWorker' in navigator) {
 }
 var inputFile = document.querySelector('#inputFile');
 var imageMetaData = document.querySelector('#img_meta_data');
+var totalSizePlaceholder = document.querySelector('#total_size');
+var totalSize = 0;
 var getFile;
 var db = new PouchDB('form_images_sample');
 
 function storeFormInfo(){
 	console.log('Info saved!');
 	getFile = inputFile.files[0];
+	var d = new Date();
+	var n = d.getTime();
 		
 	//
 	// IMPORTANT CODE STARTS HERE
 	//
 	db.put({
-	  _id: 'image', 
+	  _id: 'image'+n, 
 	  _attachments: {
 		"file": {
 		  type: getFile.type,
@@ -65,6 +69,10 @@ function storeFormInfo(){
 	// IMPORTANT CODE ENDS HERE
 	//
 	
+}
+function calculateTotalSize(){
+	totalSize = 0;
+	totalSizePlaceholder.innerText(totalSize);
 }
 </script>  
 </body>
